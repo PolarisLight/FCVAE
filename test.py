@@ -8,7 +8,7 @@ from PIL import Image
 import glob
 import time
 
-point = 5
+point = 12
 ckpt = 'save/Epoch' + str(point) + '.pth'
 
 

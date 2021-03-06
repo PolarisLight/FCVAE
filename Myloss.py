@@ -9,7 +9,7 @@ class L_color(nn.Module):
     def __init__(self):
         super(L_color, self).__init__()
 
-    def forward(self, x,y):
+    def forward(self, x, y):
         b, c, h, w = x.shape
 
         mean_rgb_x = torch.mean(x, [2, 3], keepdim=True)
@@ -20,7 +20,7 @@ class L_color(nn.Module):
         Dr = torch.pow(mr - mr2, 2)
         Dg = torch.pow(mg - mg2, 2)
         Db = torch.pow(mb - mb2, 2)
-        k = torch.pow(torch.pow(Dr, 2) + torch.pow(Dg, 2) + torch.pow(Db, 2), 0.5)
+        k = torch.pow(torch.pow(Dr - Dg, 2) + torch.pow(Dg - Db, 2) + torch.pow(Db - Dr, 2), 0.5)
 
         return k
 

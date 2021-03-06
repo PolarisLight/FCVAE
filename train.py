@@ -9,8 +9,7 @@ import model
 import utils
 import tqdm
 
-
-times = 1
+times = 2
 _ANHOUR = 4
 batch_size = 2
 lr = 1e-3
@@ -75,7 +74,7 @@ def train():
 
                 loss_reg = torch.sum(torch.pow(img_highlight - enhanced_image, 2)) / 100
 
-                loss = Loss_TV + loss_spa + loss_col + loss_exp + loss_reg
+                loss = Loss_TV + loss_spa + loss_exp + loss_reg  # + loss_col
                 all_loss.append(loss)
                 del Loss_TV, loss_spa, loss_col, loss_exp, loss_reg, img_lowlight, img_highlight, enhanced_image
                 optimizer.zero_grad()

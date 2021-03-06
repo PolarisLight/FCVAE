@@ -128,33 +128,36 @@ class fixcolor(object):
         element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))
         L = cv2.morphologyEx(L, cv2.MORPH_CLOSE, element)
         I = (L / 255.0).astype(np.float64)
-        HSV = cv2.cvtColor(S, cv2.COLOR_RGB2HSV)
-        V = HSV[:, :, 2] / 255.0
-        I = guidedFilter(I, V, 2, 0.01)
+        I = cv2.GaussianBlur(I, (5, 5), 0)
         R_r, R_g, R_b = R / I, G / I, B / I
+        """
         R_max = R_r.max()
         G_max = R_g.max()
         B_max = R_b.max()
         R_r = R_r / R_max
         R_g = R_g / G_max
         R_b = R_b / B_max
-
+        """
         I_in = np.zeros(S.shape)
         I_in[:, :, 0] = R_r
         I_in[:, :, 1] = R_g
         I_in[:, :, 2] = R_b
 
-        # I_out = self.denoiser.run(I_in)
         I_out = I_in.copy()
-
+        I_out = self.denoiser.run(I_in)
+        # I_out = cv2.GaussianBlur(I_in, (5, 5), 0)
+        # element = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        # I_out = cv2.morphologyEx(I_out, cv2.MORPH_ERODE, element)
+        # cv2.imshow("1", (I_out[:, :, -1] * 255).astype(np.uint8))
+        # cv2.waitKey(30)
         R_r, R_g, R_b = I_out[:, :, 0], I_out[:, :, 1], I_out[:, :, 2]
 
         output = np.zeros(S.shape)
         Ill = Ill.squeeze(0).numpy().transpose((1, 2, 0))
-        output[:, :, 0] = R_b * B_max
-        output[:, :, 1] = R_g * G_max
-        output[:, :, 2] = R_r * R_max
-        output *= Ill
+        output[:, :, 0] = R_b  # * B_max
+        output[:, :, 1] = R_g  # * G_max
+        output[:, :, 2] = R_r  # * R_max
+        output = output * Ill
         output = np.clip(output, 0, 1)
         return (output * 255).astype(np.uint8)
 
