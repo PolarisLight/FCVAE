@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 
 
+
 class FCVAE(nn.Module):
 
     def __init__(self):
@@ -19,9 +20,9 @@ class FCVAE(nn.Module):
 
         self.convt6 = nn.ConvTranspose2d(256, 256, 3, 1, 1, bias=True)
         self.convt5 = nn.ConvTranspose2d(256, 128, 3, 1, 1, bias=True)
-        self.convt4 = nn.ConvTranspose2d(128, 128, 3, 1, 1, bias=True)
+        self.convt4 = nn.ConvTranspose2d(256, 128, 3, 1, 1, bias=True)
         self.convt3 = nn.ConvTranspose2d(128, 64, 3, 1, 1, bias=True)
-        self.convt2 = nn.ConvTranspose2d(64, 64, 3, 1, 1, bias=True)
+        self.convt2 = nn.ConvTranspose2d(128, 64, 3, 1, 1, bias=True)
         self.convt1 = nn.ConvTranspose2d(64, 3, 3, 1, 1, bias=True)
 
         self.maxpool = nn.MaxPool2d(2, stride=2, return_indices=False, ceil_mode=False)
@@ -46,15 +47,19 @@ class FCVAE(nn.Module):
 
         x8 = self.upsample(x8)
 
+        x8 = torch.cat((x8, x3), dim=1)
+
         x9 = self.relu(self.convt4(x8))
         x10 = self.relu(self.convt3(x9))
 
         x10 = self.upsample(x10)
+        x10 = torch.cat((x10, x1), dim=1)
 
         x11 = self.relu(self.convt2(x10))
         y = self.relu(self.convt1(x11))
 
         return y, x1, x11
+
 
 
 class ADNet(nn.Module):
